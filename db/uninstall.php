@@ -37,12 +37,11 @@ require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/lib/modinfolib.php');
 
 /**
- * @param $oldversion
  * @return void
  * @throws dml_exception
  * @throws moodle_exception
  */
-function xmldb_local_educaaragon_uninstall($oldversion) {
+function xmldb_local_educaaragon_uninstall() {
     global $DB;
     // DELETE ALL EDITABLE RESOURCES.
     /*$resources = $DB->get_records('local_educa_editables');
