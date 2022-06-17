@@ -1,0 +1,70 @@
+<style>
+    .content-html {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+    }
+    .content-nav {
+        min-width: 28%;
+        margin-right: 2%;
+        border: solid 1px lightgray;
+        padding: 1em 0 0 0;
+    }
+    .content-resource-section {
+        min-width: 70%;
+    }
+    .content-html {
+        min-width: 70%;
+    }
+    /*.content_resourceeditoratto,
+    .editor_atto_wrap,
+    .editor_atto_content,
+    .editor_atto_content_wrap,
+    .editor_atto_content {
+        resize: unset !important;
+    }*/
+    div.editor_atto_toolbar {
+        border: 1px solid lightgray;
+    }
+    .editor_atto_content_wrap {
+        border: 1px solid lightgray;
+        border-top: none;
+    }
+    figure img {
+        width: 100%;
+    }
+    figure {
+        margin: 10px
+    }
+    .content-nav #siteNav ul {
+        list-style: none;
+        margin-left: 0;
+    }
+</style>
+<a class="float-right" href="{{ backversions }}" data-action="backversions" >{{#str}}backversions, local_educaaragon{{/str}}</a>
+<h5>{{#str}}version{{/str}}: {{ versionname }}</h5>
+<hr>
+<div class="content-html">
+    <div class="content-nav">
+        {{{ navigation }}}
+    </div>
+    <div class="content-resource-section">
+        {{{ html_for_edit }}}
+    </div>
+</div>
+<hr>
+<div class="content-controls">
+    <button class="btn btn-primary mx-sm-3 mb-2" data-action="save-changes" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}" data-versionname="{{ versionname }}" data-filename="{{ filename }}">
+        {{#str}}save_changes, local_educaaragon{{/str}}
+    </button>
+    <button class="btn btn-success mx-sm-3 mb-2" data-action="apply-version" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}" data-versionname="{{ versionname }}">
+        {{#str}}apply_version, local_educaaragon{{/str}}
+    </button>
+    <button class="btn btn-primary mx-sm-3 mb-2" data-action="process-version-links" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}" data-versionname="{{ versionname }}">
+        {{#str}}process_version_links, local_educaaragon{{/str}}
+    </button>
+    <a class="btn btn-warning mx-sm-3 mb-2" href="{{ viewversionlinks }}" target="_blank" data-action="viewversionlinks_link">{{#str}}view_version_links, local_educaaragon{{/str}}</a>
+    <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewesource }}" target="_blank" data-action="viewesource" >{{#str}}revieweditableresource, local_educaaragon{{/str}}</a>
+    <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewprintresource }}" target="_blank" data-action="viewprintresource" >{{#str}}viewprintresource, local_educaaragon{{/str}}</a>
+    <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewcourse }}" target="_blank" data-action="viewcourse" >{{#str}}viewcourse, local_educaaragon{{/str}}</a>
+</div>

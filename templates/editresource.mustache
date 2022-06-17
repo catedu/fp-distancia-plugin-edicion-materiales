@@ -1,0 +1,25 @@
+<div class="local_educaaragon_editresource" data-region="educaaragon-editresource">
+    {{#error}}
+        <div class="alert alert-danger">
+            <strong>{{.}}</strong>
+        </div>
+    {{/error}}
+    {{^error}}
+        <h4>{{#str}}editingresource, local_educaaragon{{/str}}: {{ resourcename }}</h4>
+        <h5>{{#str}}course{{/str}}: {{coursename}}</h5>
+        <hr>
+        {{^versionloaded}}
+            {{> local_educaaragon/version_control }}
+        {{/versionloaded}}
+        {{#versionloaded}}
+            {{> local_educaaragon/version_loaded }}
+        {{/versionloaded}}
+    {{/error}}
+</div>
+{{#js}}
+    require(['local_educaaragon/editresource'],
+        function(EditResource) {
+            EditResource.initEditResource('[data-region=educaaragon-editresource]');
+        }
+    );
+{{/js}}

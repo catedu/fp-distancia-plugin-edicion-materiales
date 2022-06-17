@@ -1,0 +1,41 @@
+<div class="local_educaaragon_registereditions" data-region="educaaragon-registereditions">
+    <h3>{{#str}} link_report, local_educaaragon {{/str}}</h3>
+    <p>{{#str}} link_report_desc, local_educaaragon {{/str}}</p>
+    <hr>
+    {{#error}}
+        <div class="alert alert-danger">
+            <strong>{{.}}</strong>
+        </div>
+    {{/error}}
+    {{^error}}
+        <h4>{{#str}}resourcename, local_educaaragon{{/str}}: {{resource}}</h4>
+        <h5>{{#str}}version, local_educaaragon{{/str}}: {{version}}</h5>
+        <hr>
+        {{#showactivelinks}}
+            <a class="float-right" href="{{ . }}" data-action="backversions" >{{#str}}showactivelinks, local_educaaragon{{/str}}</a>
+        {{/showactivelinks}}
+        {{#hideactivelinks}}
+            <a class="float-right" href="{{ . }}" data-action="backversions" >{{#str}}hideactivelinks, local_educaaragon{{/str}}</a>
+        {{/hideactivelinks}}
+        <div class="d-flex flex-row justify-content-start">
+            <div class="alert alert-info" role="alert">
+                <b>{{#str}}numlinks, local_educaaragon{{/str}}</b> {{ numlinks }}
+            </div>
+            <div class="alert alert-success" role="alert">
+                <b>{{#str}}numlinksactive, local_educaaragon{{/str}}</b> {{ numlinksactive }}
+            </div>
+            <div class="alert alert-dark" role="alert">
+                <b>{{#str}}numlinksfixed, local_educaaragon{{/str}}</b> {{ numlinksfixed }}
+            </div>
+            <div class="alert alert-danger" role="alert">
+                <b>{{#str}}numlinksbroken, local_educaaragon{{/str}}</b> {{ numlinksbroken }}
+            </div>
+            <div class="alert alert-warning" role="alert">
+                <b>{{#str}}numlinksnotvalid, local_educaaragon{{/str}}</b> {{ numlinksnotvalid }}
+            </div>
+        </div>
+        <div data-region="editables-table">
+            {{{resourcelinks}}}
+        </div>
+    {{/error}}
+</div>

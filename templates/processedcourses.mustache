@@ -1,0 +1,22 @@
+<div class="local_educaaragon_processedcourses" data-region="educaaragon-processedcourses">
+    <h3>{{#str}} processedcourses, local_educaaragon {{/str}}</h3>
+    <p>{{#str}} processedcourses_help, local_educaaragon {{/str}}</p>
+    <br><br>
+    <div class="d-flex flex-row justify-content-start">
+        <div class="alert alert-info" role="alert">
+            <b>{{#str}}numprocessed, local_educaaragon{{/str}}</b> {{ numprocessed }}
+        </div>
+        <div class="alert alert-success" role="alert">
+            <b>{{#str}}numprocessedcorrectly, local_educaaragon{{/str}}</b> {{ numprocessedcorrectly }}
+        </div>
+        <div class="alert alert-dark" role="alert">
+            <b>{{#str}}numprocessedwarning, local_educaaragon{{/str}}</b> {{ numprocessedwarnign }}
+        </div>
+        <div class="alert alert-danger" role="alert">
+            <b>{{#str}}numprocessederror, local_educaaragon{{/str}}</b> {{ numprocessederror }}
+        </div>
+    </div>
+    <div data-region="processedcourses-table">
+        {{> local_educaaragon/processedcourses_table }}
+    </div>
+</div>

@@ -1,0 +1,12 @@
+<style>
+    [data-region="processedcourses-table"] nav {display: none}
+    [data-action="reprocessing_course"] {cursor: pointer}
+</style>
+{{{processedcoursestable}}}
+{{#js}}
+    require(['local_educaaragon/processedcourses_page'],
+        function(Page) {
+            Page.initClicks('[data-region=educaaragon-processedcourses]');
+        }
+    );
+{{/js}}

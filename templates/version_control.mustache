@@ -1,0 +1,69 @@
+{{^hasversions}}
+    <div class="form-inline">
+        <div class="form-group mb-2">
+            <input type="text" readonly class="form-control-plaintext" value="{{#str}}createnewversion, local_educaaragon{{/str}}">
+        </div>
+        <div class="form-group mx-sm-3 mb-2">
+            <label for="newversion" class="sr-only">{{#str}}versionname, local_educaaragon{{/str}}</label>
+            <input type="text" maxlength="20" required class="form-control" id="newversion" placeholder="{{#str}}versionname, local_educaaragon{{/str}}">
+        </div>
+        <button class="btn btn-primary mb-2" data-action="createversion" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}">
+            {{#str}}confirm{{/str}}
+        </button>
+    </div>
+{{/hasversions}}
+{{#hasversions}}
+    <div class="form-inline">
+        <div class="form-group mb-2">
+            <input type="text" readonly class="form-control-plaintext" value="{{#str}}selectversion, local_educaaragon{{/str}}">
+        </div>
+        <div class="form-group mx-sm-3 mb-2">
+            <select class="custom-select" data-region="select-version" data-action="change-version">
+                {{#versions}}
+                    <option value="{{.}}">{{.}}</option>
+                {{/versions}}
+            </select>
+        </div>
+        <button class="btn btn-primary mx-sm-3 mb-2" data-action="loadversion">
+            {{#str}}loadversion, local_educaaragon{{/str}}
+        </button>
+        <button class="btn btn-success mx-sm-3 mb-2" data-action="apply-version" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}">
+            {{#str}}apply_version, local_educaaragon{{/str}}
+        </button>
+        <button class="btn btn-danger mx-sm-3 mb-2" data-action="deleteversion" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}">
+            {{#str}}deleteversion, local_educaaragon{{/str}}
+        </button>
+        <button class="btn btn-primary mx-sm-3 mb-2" data-action="process-version-links" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}">
+            {{#str}}process_version_links, local_educaaragon{{/str}}
+        </button>
+        <button class="btn btn-warning mx-sm-3 mb-2" data-href="{{ viewversionlinks }}" data-action="viewversionlinks" data-resourceid="{{ resourceid }}">
+            {{#str}}view_version_links, local_educaaragon{{/str}}
+        </button>
+        <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewesource }}" target="_blank" data-action="viewesource" >{{#str}}revieweditableresource, local_educaaragon{{/str}}</a>
+        <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewprintresource }}" target="_blank" data-action="viewprintresource" >{{#str}}viewprintresource, local_educaaragon{{/str}}</a>
+        <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewcourse }}" target="_blank" data-action="viewcourse" >{{#str}}viewcourse, local_educaaragon{{/str}}</a>
+    </div>
+    <hr>
+    <div class="form-inline">
+        <div class="form-group mb-2">
+            <input type="text" readonly class="form-control-plaintext" value="{{#str}}createnewversion, local_educaaragon{{/str}}">
+        </div>
+        <div class="form-group mx-sm-3 mb-2">
+            <label for="newversion" class="sr-only">{{#str}}versionname, local_educaaragon{{/str}}</label>
+            <input type="text" maxlength="20" required class="form-control" id="newversion" placeholder="{{#str}}versionname, local_educaaragon{{/str}}">
+        </div>
+        <div class="form-group mb-2">
+            <input type="text" readonly class="form-control-plaintext" value="{{#str}}asofversion, local_educaaragon{{/str}}">
+        </div>
+        <div class="form-group mx-sm-3 mb-2">
+            <select class="custom-select" data-region="select-asofversion">
+                {{#versions}}
+                    <option value="{{.}}">{{.}}</option>
+                {{/versions}}
+            </select>
+        </div>
+        <button class="btn btn-primary mb-2" data-action="createversion" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}">
+            {{#str}}confirm{{/str}}
+        </button>
+    </div>
+{{/hasversions}}
