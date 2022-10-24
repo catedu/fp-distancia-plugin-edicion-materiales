@@ -174,3 +174,6 @@ $string['numprocessedcorrectly'] = 'Correct: ';
 $string['numprocessederror'] = 'Errors: ';
 $string['numprocessedwarning'] = 'No folder: ';
 $string['nofolder'] = 'No folder';
+
+// Navigation Links
+$string['nav_adm_cursos'] = 'Site administration (courses)';
