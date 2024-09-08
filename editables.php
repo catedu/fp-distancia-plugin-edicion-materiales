@@ -35,15 +35,12 @@ $courseid = optional_param('courseid', 0, PARAM_INT);
 if ($courseid !== 0) {
     $context = context_course::instance($courseid);
     require_capability('local/educaaragon:editresources', $context);
-    $PAGE->navbar->add('Curso', 'https://www.adistanciafparagon.es/course/view.php?id=' . $courseid);
 } else {
     $context = context_system::instance();
     require_capability('local/educaaragon:manageall', $context);
-    $PAGE->navbar->add('Administración del sitio (cursos)', 'https://www.adistanciafparagon.es/admin/search.php#linkcourses');
 }
 
 $PAGE->set_url('/local/educaaragon/editables.php');
-
 $PAGE->set_pagelayout('frontpage');
 $contextsystem = context_system::instance();
 $PAGE->set_context($contextsystem);
@@ -52,6 +49,16 @@ $output = $PAGE->get_renderer('local_educaaragon');
 
 $PAGE->set_title(get_string('editables', 'local_educaaragon'));
 $PAGE->set_heading(get_string('editables', 'local_educaaragon'));
+$previewnode = $PAGE->navigation->add(
+    'Volver al curso',
+    new moodle_url('/course/view.php?id=' . $courseid),
+    navigation_node::TYPE_CONTAINER
+);
+$thingnode = $previewnode->add(
+    get_string('editables', 'local_educaaragon'),
+    new moodle_url('/a/link/if/you/want/one.php')
+);
+$thingnode->make_active();
 
 $editablespage = new editables_page($courseid);
 

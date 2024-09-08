@@ -44,6 +44,7 @@
 <a class="float-right" href="{{ backversions }}" data-action="backversions" >{{#str}}backversions, local_educaaragon{{/str}}</a>
 <h5>{{#str}}version{{/str}}: {{ versionname }}</h5>
 <hr>
+<small class="haschanges" style="display: none; color: red; text-align: right">{{#str}}haschanges, local_educaaragon{{/str}}</small>
 <div class="content-html">
     <div class="content-nav">
         {{{ navigation }}}
@@ -52,19 +53,21 @@
         {{{ html_for_edit }}}
     </div>
 </div>
+<small class="haschanges" style="display: none; color: red; text-align: right">{{#str}}haschanges, local_educaaragon{{/str}}</small>
 <hr>
 <div class="content-controls">
-    <button class="btn btn-primary mx-sm-3 mb-2" data-action="save-changes" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}" data-versionname="{{ versionname }}" data-filename="{{ filename }}">
+    <button class="btn btn-primary mx-sm-2 mb-2" data-action="save-changes" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}" data-versionname="{{ versionname }}" data-filename="{{ filename }}">
         {{#str}}save_changes, local_educaaragon{{/str}}
     </button>
-    <button class="btn btn-success mx-sm-3 mb-2" data-action="apply-version" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}" data-versionname="{{ versionname }}">
+    <button class="btn btn-success mx-sm-2 mb-2" data-action="apply-version" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}" data-versionname="{{ versionname }}">
         {{#str}}apply_version, local_educaaragon{{/str}}
     </button>
-    <button class="btn btn-primary mx-sm-3 mb-2" data-action="process-version-links" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}" data-versionname="{{ versionname }}">
+    <button class="btn btn-primary mx-sm-2 mb-2" data-action="process-version-links" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}" data-versionname="{{ versionname }}">
         {{#str}}process_version_links, local_educaaragon{{/str}}
     </button>
-    <a class="btn btn-warning mx-sm-3 mb-2" href="{{ viewversionlinks }}" target="_blank" data-action="viewversionlinks_link">{{#str}}view_version_links, local_educaaragon{{/str}}</a>
-    <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewesource }}" target="_blank" data-action="viewesource" >{{#str}}revieweditableresource, local_educaaragon{{/str}}</a>
-    <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewprintresource }}" target="_blank" data-action="viewprintresource" >{{#str}}viewprintresource, local_educaaragon{{/str}}</a>
-    <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewcourse }}" target="_blank" data-action="viewcourse" >{{#str}}viewcourse, local_educaaragon{{/str}}</a>
+    <a class="btn btn-primary mx-sm-2 mb-2" href="{{ edittoc }}" data-action="edittoc_link">{{#str}}edittoc, local_educaaragon{{/str}}</a>
+    <a class="btn btn-warning mx-sm-2 mb-2" href="{{ viewversionlinks }}" target="_blank" data-action="viewversionlinks_link">{{#str}}view_version_links, local_educaaragon{{/str}}</a>
+    <a class="btn btn-info mx-sm-2 mb-2" href="{{ viewesource }}" target="_blank" data-action="viewesource" >{{#str}}revieweditableresource, local_educaaragon{{/str}}</a>
+    <a class="btn btn-info mx-sm-2 mb-2" href="{{ viewprintresource }}" target="_blank" data-action="viewprintresource" >{{#str}}viewprintresource, local_educaaragon{{/str}}</a>
+    <a class="btn btn-info mx-sm-2 mb-2" href="{{ viewcourse }}" target="_blank" data-action="viewcourse" >{{#str}}viewcourse, local_educaaragon{{/str}}</a>
 </div>

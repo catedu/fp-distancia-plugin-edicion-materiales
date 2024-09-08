@@ -14,7 +14,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package local_educaaragon
  * @author 3iPunt <https://www.tresipunt.com/>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright 3iPunt <https://www.tresipunt.com/>
@@ -26,8 +25,9 @@ define([
     'core/ajax',
     'core/modal_factory',
     'core/modal_events',
-    'core/templates'
-], function($, Str, Ajax, ModalFactory, ModalEvents, Templates) {
+    'core/templates',
+    'core/notification'
+], function($, Str, Ajax, ModalFactory, ModalEvents, Templates, Notification) {
     "use strict";
 
     /**

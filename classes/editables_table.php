@@ -124,7 +124,7 @@ class editables_table extends table_sql {
         $reviewresource = html_writer::tag('i', '', [
             'class' => 'icon fa fa-eye', 'title' => get_string('revieweditableresource', 'local_educaaragon')
         ]);
-        $cmid !== false ? $contentreviewresource = html_writer::link(new moodle_url('/mod/resource/view.php', ['id' => $cmid->id]), $reviewresource, ['target' => '_blank']) : $contentreviewresource = '';
+        $cmid !== false ? $contentreviewresource = html_writer::link(new moodle_url('/mod/resource/view.php', ['id' => $cmid->id, 'version' => $row->version]), $reviewresource, ['target' => '_blank']) : $contentreviewresource = '';
 
         $contenteditresource = '';
         if ($cmid !== false) {
@@ -142,7 +142,7 @@ class editables_table extends table_sql {
                 $printableresource = html_writer::tag('i', '', [
                     'class' => 'icon fa fa-print', 'title' => get_string('viewprintresource', 'local_educaaragon')
                 ]);
-                $contentprintableresource = html_writer::link(new moodle_url('/mod/resource/view.php', ['id' => $printablecmid->id]), $printableresource, ['target' => '_blank']);
+                $contentprintableresource = html_writer::link(new moodle_url('/mod/resource/view.php', ['id' => $printablecmid->id, 'version' => $row->version]), $printableresource, ['target' => '_blank']);
             }
         }
 

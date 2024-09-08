@@ -5,10 +5,10 @@ global $CFG;
 require_once($CFG->dirroot . '/repository/lib.php');
 
 /**
- * @param $str
+ * @param string $str
  * @return string
  */
-function remove_accents($str): string {
+function remove_accents(string $str): string {
     if (!mb_detect_encoding($str, 'UTF-8', true)) {
         $str = utf8_encode($str);
     }
@@ -90,9 +90,10 @@ function delete_folder($dirPath) {
  * @return string
  */
 function clean_string(string $string): string {
-    $string = str_replace(' ', '-', $string);
+    $string = str_replace(' ', '_', $string);
     $string = remove_accents($string);
-    return (string)preg_replace('/[^A-Za-z\d\-_]/', '', $string);
+    $string = (string)preg_replace('/[^A-Za-z\d\-_]/', '', $string);
+    return substr($string, 0, 90);
 }
 
 function clean_url(string $url): string {

@@ -22,6 +22,7 @@ use component_generator_base;
 use core\invalid_persistent_exception;
 use dml_exception;
 use DOMDocument;
+use DOMException;
 use file_exception;
 use RuntimeException;
 use moodle_exception;
@@ -291,9 +292,11 @@ class processcourse {
      * @param cm_info $cm
      * @param array $folder
      * @return stdClass
+     * @throws DOMException
      * @throws coding_exception
      * @throws dml_exception
      * @throws file_exception
+     * @throws moodle_exception
      * @throws repository_exception
      * @throws stored_file_creation_exception
      */
@@ -459,6 +462,7 @@ class processcourse {
 
     /**
      * @return void
+     * @throws DOMException
      */
     private function unify_files(): void {
         // libxml_use_internal_errors(true); // TODO manage errors.
@@ -500,6 +504,70 @@ class processcourse {
                     }
                 }
                 $indexdoc->saveHTMLFile($this->processingroute . 'index.html');
+            }
+        }
+        $heads = $indexdoc->getElementsByTagName('head');
+        $css = $indexdoc->createElement('style',
+            '#nav-toggler, a#main {
+                display: none;
+            }
+            section > header:first-child,
+            div#main {
+                break-before: avoid !important;
+            }
+            article + header,
+            #nodeDecoration h1#nodeTitle {
+                break-before: page;
+                break-inside: avoid !important;
+            }
+            article,
+            a[name="main"] + div#nodeDecoration {
+                break-before: avoid;
+                break-after: avoid;
+                break-inside: avoid !important;
+            }
+            tbody tr,
+            div.iDevice_wrapper {
+                break-inside: avoid !important;
+            }
+            article[class$="autoevaluacionfpd"],
+            div[class$="autoevaluacionfpd"] {
+                break-before: page;
+                break-after: page;
+            }');
+        $metas = $indexdoc->getElementById('metacachehttp');
+        if ($metas === null) {
+            $metacache = $indexdoc->createElement('meta', '');
+            $metacacheid = $indexdoc->createAttribute('id');
+            $metacacheid->value = 'metacachehttp';
+            $metacache->appendChild($metacacheid);
+            $metacachehttp = $indexdoc->createAttribute('http-equiv');
+            $metacachehttp->value = 'Cache-Control';
+            $metacache->appendChild($metacachehttp);
+            $metacachecontent = $indexdoc->createAttribute('content');
+            $metacachecontent->value = 'no-cache, no-store, must-revalidate';
+            $metacache->appendChild($metacachecontent);
+
+            $metapragma = $indexdoc->createElement('meta', '');
+            $metapragmahttp = $indexdoc->createAttribute('http-equiv');
+            $metapragmahttp->value = 'Pragma';
+            $metapragma->appendChild($metapragmahttp);
+            $metapragmacontent = $indexdoc->createAttribute('content');
+            $metapragmacontent->value = 'no-cache';
+            $metapragma->appendChild($metapragmacontent);
+
+            $metaexpires = $indexdoc->createElement('meta', '');
+            $metaexpireshttp = $indexdoc->createAttribute('http-equiv');
+            $metaexpireshttp->value = 'Expires';
+            $metaexpires->appendChild($metaexpireshttp);
+            $metaexpirescontent = $indexdoc->createAttribute('content');
+            $metaexpirescontent->value = '0';
+            $metaexpires->appendChild($metaexpirescontent);
+            foreach ($heads as $head) {
+                $head->appendChild($metacache);
+                $head->appendChild($metapragma);
+                $head->appendChild($metaexpires);
+                $head->appendChild($css);
             }
         }
         $body = $indexdoc->getElementsByTagName('body')->item(0);

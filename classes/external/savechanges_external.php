@@ -24,6 +24,7 @@
 namespace local_educaaragon\external;
 
 use coding_exception;
+use context_system;
 use core\invalid_persistent_exception;
 use dml_exception;
 use DOMException;
@@ -98,6 +99,9 @@ class savechanges_external extends external_api {
         if ($versionname === '') {
             $versionname = (string)time();
         }
+        $contextsystem = context_system::instance();
+        self::validate_context($contextsystem);
+        require_capability('local/educaaragon:editresources', $contextsystem);
         $cmrecord = $DB->get_record('course_modules', ['course' => $courseid, 'instance' => $resourceid], 'id');
         $cminfo = get_fast_modinfo($courseid)->get_cm($cmrecord->id);
         $manageeditable = new manage_editable_resource($cminfo, $versionname);

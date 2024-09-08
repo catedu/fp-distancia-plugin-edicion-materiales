@@ -24,9 +24,12 @@
 namespace local_educaaragon\output;
 
 use coding_exception;
+use core\invalid_persistent_exception;
 use dml_exception;
+use DOMException;
 use moodle_exception;
 use plugin_renderer_base;
+use repository_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -57,11 +60,31 @@ class renderer extends plugin_renderer_base {
     /**
      * @param editresource_page $page
      * @return bool|string
+     * @throws DOMException
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_persistent_exception
      * @throws moodle_exception
+     * @throws repository_exception
      */
     public function render_editresource_page(editresource_page $page) {
         $context = $page->export_for_template($this);
         return $this->render_from_template('local_educaaragon/editresource', $context);
+    }
+
+    /**
+     * @param editresource_page $page
+     * @return bool|string
+     * @throws DOMException
+     * @throws invalid_persistent_exception
+     * @throws repository_exception
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws moodle_exception
+     */
+    public function render_editresourcetoc_page(editresource_page $page) {
+        $context = $page->export_for_template($this);
+        return $this->render_from_template('local_educaaragon/editresourcetoc', $context);
     }
 
     /**
@@ -76,9 +99,10 @@ class renderer extends plugin_renderer_base {
     }
 
     /**
-     * @param registereditions_page $page
+     * @param resourcelinks_page $page
      * @return bool|string
      * @throws coding_exception
+     * @throws dml_exception
      * @throws moodle_exception
      */
     public function render_resourcelinks_page(resourcelinks_page $page) {

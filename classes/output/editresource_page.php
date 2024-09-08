@@ -66,7 +66,7 @@ class editresource_page implements renderable, templatable {
         global $PAGE;
         $context = context_system::instance();
         $PAGE->set_context($context);
-        $PAGE->set_url('/local/educaaragon/edit.php');
+        $PAGE->set_url('/local/educaaragon/editresource.php');
         $PAGE->set_title(get_string('editables', 'local_educaaragon'));
         $PAGE->set_heading(get_string('editables', 'local_educaaragon'));
         $PAGE->set_pagelayout('standard');
@@ -92,8 +92,8 @@ class editresource_page implements renderable, templatable {
         $cm = $this->get_cm();
         $printablecm = $this->get_printablecm($cm);
         if ($version === '') {
-            $managecm = new manage_editable_resource($cm);
-            $versions = $managecm->get_versions();
+            @$managecm = new manage_editable_resource($cm);
+            $versions = @$managecm->get_versions();
             return [
                 'resourcename' => $cm->name,
                 'resourceid' => $cm->instance,
@@ -108,12 +108,12 @@ class editresource_page implements renderable, templatable {
             ];
         }
         if ($version === 'original') {
-            return ['error' => get_string('versionnoteditable', 'local_educaaragon')];
+            return ['error' => get_string('versionnoteditable', 'local_educaaragon', (new moodle_url('/local/educaaragon/editresource.php', ['resourceid' => $cm->instance]))->out(false))];
         }
 
-        $managecm = new manage_editable_resource($cm, $version);
+        @$managecm = new manage_editable_resource($cm, $version);
         $filehtml = optional_param('file', 'index.html', PARAM_RAW);
-        $html = $managecm->get_html_for_edit($filehtml);
+        $html = @$managecm->get_html_for_edit($filehtml);
         $attohtml = $this->get_atto($html, $version);
         return [
             'resourcename' => $cm->name,
@@ -124,15 +124,16 @@ class editresource_page implements renderable, templatable {
             'versions' => [],
             'versionloaded' => true,
             'versionname' => $version,
-            'css' => $managecm->get_css(),
-            'navigation' => $managecm->get_html_nav(),
+            'css' => @$managecm->get_css(),
+            'navigation' => @$managecm->get_html_nav(),
             'html_for_edit' => $attohtml,
             'filename' => $filehtml,
-            'viewesource' => (new moodle_url('/mod/resource/view.php', ['id' => $cm->id]))->out(),
-            'viewprintresource' => (new moodle_url('/mod/resource/view.php', ['id' => $printablecm->id]))->out(),
+            'viewesource' => (new moodle_url('/mod/resource/view.php', ['id' => $cm->id, 'version' => $version]))->out(false),
+            'viewprintresource' => (new moodle_url('/mod/resource/view.php', ['id' => $printablecm->id, 'version' => $version]))->out(false),
             'viewcourse' => (new moodle_url('/course/view.php', ['id' => $cm->course]))->out(),
             'backversions' => (new moodle_url('/local/educaaragon/editresource.php', ['resourceid' => $cm->instance]))->out(),
-            'viewversionlinks' => (new moodle_url('/local/educaaragon/resourcelinks.php', ['resourceid' => $cm->instance, 'version' => $version]))->out(false)
+            'viewversionlinks' => (new moodle_url('/local/educaaragon/resourcelinks.php', ['resourceid' => $cm->instance, 'version' => $version]))->out(false),
+            'edittoc' => (new moodle_url('/local/educaaragon/editresourcetoc.php', ['resourceid' => $cm->instance, 'version' => $version]))->out(false)
         ];
     }
 
@@ -159,7 +160,7 @@ class editresource_page implements renderable, templatable {
      * @throws moodle_exception
      * @throws dml_exception
      */
-    private function get_cm(): cm_info {
+    protected function get_cm(): cm_info {
         global $DB;
         $recordcm = $DB->get_record('course_modules', ['instance' => $this->resourceid, 'course' => $this->courseid], 'id');
         return get_fast_modinfo($this->courseid)->get_cm($recordcm->id);
@@ -171,7 +172,7 @@ class editresource_page implements renderable, templatable {
      * @throws dml_exception
      * @throws moodle_exception
      */
-    private function get_printablecm(cm_info $cm): cm_info {
+    protected function get_printablecm(cm_info $cm): cm_info {
         global $DB;
         $related = $DB->get_record('local_educa_editables', ['courseid' => $this->courseid, 'relatedcmid' => $cm->id], 'resourceid');
         $relatedcm = $DB->get_record('course_modules', ['instance' => $related->resourceid, 'course' => $this->courseid], 'id');

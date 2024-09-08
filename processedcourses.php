@@ -34,7 +34,6 @@ $context = context_system::instance();
 require_capability('local/educaaragon:manageall', $context);
 
 $PAGE->set_url('/local/educaaragon/processedcourses.php');
-$PAGE->navbar->add('Administración del sitio (cursos)', 'https://www.adistanciafparagon.es/admin/search.php#linkcourses');
 $PAGE->set_pagelayout('frontpage');
 $PAGE->set_context($context);
 

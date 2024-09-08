@@ -28,6 +28,7 @@ use local_educaaragon\external\process_resource_links;
 use local_educaaragon\external\processedtable_external;
 use local_educaaragon\external\reprocessing_external;
 use local_educaaragon\external\savechanges_external;
+use local_educaaragon\external\savetocchanges_external;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -72,6 +73,14 @@ $functions = [
         'ajax'            => true,
         'loginrequired'   => true
     ],
+    'local_educaaragon_savetocchanges' => [
+        'classname'       => savetocchanges_external::class,
+        'methodname'      => 'savetocchanges',
+        'description'     => 'Save TOC changes for version',
+        'type'            => 'write',
+        'ajax'            => true,
+        'loginrequired'   => true
+    ],
     'local_educaaragon_applyversion' => [
         'classname'       => applyversion_external::class,
         'methodname'      => 'applyversion',
@@ -98,6 +107,7 @@ $services = [
             'local_educaaragon_createversion',
             'local_educaaragon_deleteversion',
             'local_educaaragon_savechanges',
+            'local_educaaragon_savetocchanges',
             'local_educaaragon_applyversion',
             'local_educaaragon_processresourcelinks'
         ],

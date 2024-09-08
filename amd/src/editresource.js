@@ -14,7 +14,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package local_educaaragon
  * @author 3iPunt <https://www.tresipunt.com/>
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright 3iPunt <https://www.tresipunt.com/>
@@ -26,14 +25,16 @@ define([
     'core/ajax',
     'core/modal_factory',
     'core/modal_events',
-    'core/templates'
-], function($, Str, Ajax, ModalFactory, ModalEvents, Templates) {
+    'core/templates',
+    'core/notification'
+], function($, Str, Ajax, ModalFactory, ModalEvents, Templates, Notification) {
     "use strict";
-
+    /* eslint-disable no-console */
     let ACTION = {
         CREATEVERSION: '[data-action="createversion"]',
         DELETEVERSION: '[data-action="deleteversion"]',
         LOADVERSION: '[data-action="loadversion"]',
+        EDITTOC: '[data-action="edittoc"]',
         SAVECHANGES: '[data-action="save-changes"]',
         APPLYVERSION: '[data-action="apply-version"]',
         CHANGEVERSION: '[data-action="change-version"]',
@@ -53,7 +54,8 @@ define([
     let REGION = {
         CONTENT_CONTROLS: '[data-region="educaaragon-editresource"]',
         CONTENT_ATTO_HTML: '.editor_atto_content',
-        OVERLAY: '[data-region="overlay-icon-container"]'
+        OVERLAY: '[data-region="overlay-icon-container"]',
+        HASCHANGES: '.haschanges'
     };
 
     let TEMPLATES = {
@@ -71,6 +73,15 @@ define([
         this.initEditResource();
     }
 
+    let hasChanges = false;
+    let hasChangesStringsKeys = [
+        {key: 'changesnotsaved', component: 'local_educaaragon'},
+        {key: 'changesnotsaved_desc', component: 'local_educaaragon'},
+        {key: 'savechanges', component: 'local_educaaragon'}
+    ];
+    let hasChangesStrings;
+    let modalChanges;
+
     /** @type {jQuery} The jQuery node for the page region. */
     EditResource.prototype.node = null;
 
@@ -78,12 +89,40 @@ define([
         this.node.find(ACTION.CREATEVERSION).on('click', this.createVersion);
         this.node.find(ACTION.DELETEVERSION).on('click', this.deleteVersion);
         this.node.find(ACTION.LOADVERSION).on('click', this.loadVersion);
+        this.node.find(ACTION.EDITTOC).on('click', this.editToc);
         this.node.find(ACTION.SAVECHANGES).on('click', this.saveChanges);
         this.node.find(ACTION.APPLYVERSION).on('click', this.applyVersion);
         this.node.find(ACTION.PROCESSVERSIONLINKS).on('click', this.processVersionLinks);
         this.node.find(ACTION.VIEWVERSIONLINKS).on('click', this.viewVersionLinks);
         this.changeVersion();
         $(document).on('change', ACTION.CHANGEVERSION, this.changeVersion);
+        this.createModalChanges();
+        document.querySelector(REGION.CONTENT_ATTO_HTML).addEventListener('input', function() {
+            hasChanges = true;
+            $(REGION.HASCHANGES).css('display', 'block');
+        });
+        $('.editor_atto_toolbar [type="button"]:not(.atto_collapse_button)').on('click', function(){
+            hasChanges = true;
+            $(REGION.HASCHANGES).css('display', 'block');
+        });
+        document.querySelectorAll(
+            'a:not([target="_blank"]), .content-controls button:not([data-action="save-changes"])'
+        ).forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (hasChanges) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                EditResource.prototype.detectChanges(e);
+            });
+        });
+
+        window.onbeforeunload = function(e) {
+            EditResource.prototype.detectChanges(e);
+            if (hasChanges) {
+                e.preventDefault();
+            }
+        };
     };
 
     EditResource.prototype.createVersion = function(e) {
@@ -124,7 +163,7 @@ define([
                         }
                     };
                     Templates.render(TEMPLATES.LOADING, {visible: true}).done(function(html) {
-                        let identifier = $(REGION.CONTENT_CONTROLS);
+                        let identifier = $('body');
                         identifier.append(html);
                         Ajax.call([request])[0].done(function(response) {
                             if (response.response === true) {
@@ -159,8 +198,8 @@ define([
         let resourceid = $(e.currentTarget).attr('data-resourceid');
         let versionname = $('[data-region="select-version"]').val();
         let stringkeys = [
-            {key: 'deleteversion', component: 'local_educaaragon'},
-            {key: 'deleteversion_desc', component: 'local_educaaragon'},
+            {key: 'changesnotsaved', component: 'local_educaaragon'},
+            {key: 'changesnotsaved_desc', component: 'local_educaaragon'},
             {key: 'confirm', component: 'local_educaaragon'}
         ];
         Str.get_strings(stringkeys).then(function(langStrings) {
@@ -183,7 +222,7 @@ define([
                         }
                     };
                     Templates.render(TEMPLATES.LOADING, {visible: true}).done(function(html) {
-                        let identifier = $(REGION.CONTENT_CONTROLS);
+                        let identifier = $('body');
                         identifier.append(html);
                         Ajax.call([request])[0].done(function(response) {
                             if (response.response === true) {
@@ -207,6 +246,20 @@ define([
         e.stopPropagation();
         let versionname = $('[data-region="select-version"]').val();
         let url = window.location.href;
+        if (url.indexOf('?') > -1) {
+            url += '&version=' + versionname;
+        } else {
+            url += '?version=' + versionname;
+        }
+        window.location.href = url;
+    };
+
+    EditResource.prototype.editToc = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        let versionname = $('[data-region="select-version"]').val();
+        let url = window.location.href;
+        url = url.replace('editresource.php', 'editresourcetoc.php');
         if (url.indexOf('?') > -1) {
             url += '&version=' + versionname;
         } else {
@@ -267,7 +320,7 @@ define([
                         }
                     };
                     Templates.render(TEMPLATES.LOADING, {visible: true}).done(function(html) {
-                        let identifier = $(REGION.CONTENT_CONTROLS);
+                        let identifier = $('body');
                         identifier.append(html);
                         Ajax.call([request])[0].done(function(response) {
                             const d = new Date();
@@ -278,6 +331,8 @@ define([
                                     announce: true}).done(function(htmlsuccess) {
                                     $(REGION.CONTENT_CONTROLS).prepend(htmlsuccess);
                                 });
+                                hasChanges = false;
+                                $(REGION.HASCHANGES).css('display', 'none');
                             } else {
                                 Templates.render(TEMPLATES.ERROR, {message: langStrings[4],
                                     closebutton: true,
@@ -303,88 +358,92 @@ define([
     EditResource.prototype.applyVersion = function(e) {
         e.preventDefault();
         e.stopPropagation();
-        let courseid = $(e.currentTarget).attr('data-courseid');
-        let resourceid = $(e.currentTarget).attr('data-resourceid');
-        let versionname = $(e.currentTarget).attr('data-versionname');
-        if (versionname === undefined) {
-            versionname = $('[data-region="select-version"]').val();
-        }
-        let stringkeys = [
-            {key: 'apply_version', component: 'local_educaaragon'},
-            {key: 'apply_version_desc', component: 'local_educaaragon'},
-            {key: 'confirm', component: 'local_educaaragon'},
-            {key: 'version_saved', component: 'local_educaaragon'},
-            {key: 'version_not_saved', component: 'local_educaaragon'},
-            {key: 'versionprintable_saved', component: 'local_educaaragon'},
-            {key: 'versionprintable_not_saved', component: 'local_educaaragon'}
-        ];
+        if (hasChanges) {
+            EditResource.prototype.detectChanges(e);
+        } else {
+            let courseid = $(e.currentTarget).attr('data-courseid');
+            let resourceid = $(e.currentTarget).attr('data-resourceid');
+            let versionname = $(e.currentTarget).attr('data-versionname');
+            if (versionname === undefined) {
+                versionname = $('[data-region="select-version"]').val();
+            }
+            let stringkeys = [
+                {key: 'apply_version', component: 'local_educaaragon'},
+                {key: 'apply_version_desc', component: 'local_educaaragon'},
+                {key: 'confirm', component: 'local_educaaragon'},
+                {key: 'version_saved', component: 'local_educaaragon'},
+                {key: 'version_not_saved', component: 'local_educaaragon'},
+                {key: 'versionprintable_saved', component: 'local_educaaragon'},
+                {key: 'versionprintable_not_saved', component: 'local_educaaragon'}
+            ];
 
-        Str.get_strings(stringkeys).then(function(langStrings) {
-            let title = langStrings[0];
-            let confirmMessage = langStrings[1];
-            let buttonText = langStrings[2];
-            return ModalFactory.create({
-                title: title,
-                body: confirmMessage,
-                type: ModalFactory.types.SAVE_CANCEL
-            }).then(function(modal) {
-                modal.setSaveButtonText(buttonText);
-                modal.getRoot().on(ModalEvents.save, function() {
-                    let request = {
-                        methodname: SERVICES.APPLYVERSION,
-                        args: {
-                            courseid: courseid,
-                            resourceid: resourceid,
-                            versionname: versionname
-                        }
-                    };
-                    Templates.render(TEMPLATES.LOADING, {visible: true}).done(function(html) {
-                        let identifier = $(REGION.CONTENT_CONTROLS);
-                        identifier.append(html);
-                        Ajax.call([request])[0].done(function(response) {
-                            const d = new Date();
-                            if (response.response === true) {
-                                Templates.render(TEMPLATES.SUCCESS, {message: langStrings[3] + d.toTimeString().split(' ')[0],
-                                    closebutton: true,
-                                    // eslint-disable-next-line max-nested-callbacks
-                                    announce: true}).done(function(htmlsuccess) {
-                                    $(REGION.CONTENT_CONTROLS).prepend(htmlsuccess);
-                                });
-                            } else {
-                                Templates.render(TEMPLATES.ERROR, {message: langStrings[4],
-                                    closebutton: true,
-                                    // eslint-disable-next-line max-nested-callbacks
-                                    announce: true}).done(function(htmlerror) {
-                                    $(REGION.CONTENT_CONTROLS).prepend(htmlerror);
-                                });
+            Str.get_strings(stringkeys).then(function(langStrings) {
+                let title = langStrings[0];
+                let confirmMessage = langStrings[1];
+                let buttonText = langStrings[2];
+                return ModalFactory.create({
+                    title: title,
+                    body: confirmMessage,
+                    type: ModalFactory.types.SAVE_CANCEL
+                }).then(function(modal) {
+                    modal.setSaveButtonText(buttonText);
+                    modal.getRoot().on(ModalEvents.save, function() {
+                        let request = {
+                            methodname: SERVICES.APPLYVERSION,
+                            args: {
+                                courseid: courseid,
+                                resourceid: resourceid,
+                                versionname: versionname
                             }
-                            if (response.responseprintable === true) {
-                                Templates.render(TEMPLATES.SUCCESS, {message: langStrings[5] + d.toTimeString().split(' ')[0],
-                                    closebutton: true,
-                                    // eslint-disable-next-line max-nested-callbacks
-                                    announce: true}).done(function(htmlsuccess) {
-                                    $(REGION.CONTENT_CONTROLS).prepend(htmlsuccess);
-                                });
-                            } else {
-                                Templates.render(TEMPLATES.ERROR, {message: langStrings[6],
-                                    closebutton: true,
-                                    // eslint-disable-next-line max-nested-callbacks
-                                    announce: true}).done(function(htmlerror) {
-                                    $(REGION.CONTENT_CONTROLS).prepend(htmlerror);
-                                });
-                            }
-                            $(REGION.OVERLAY).remove();
-                        }).fail(Notification.exception);
+                        };
+                        Templates.render(TEMPLATES.LOADING, {visible: true}).done(function(html) {
+                            let identifier = $('body');
+                            identifier.append(html);
+                            Ajax.call([request])[0].done(function(response) {
+                                const d = new Date();
+                                if (response.response === true) {
+                                    Templates.render(TEMPLATES.SUCCESS, {message: langStrings[3] + d.toTimeString().split(' ')[0],
+                                        closebutton: true,
+                                        // eslint-disable-next-line max-nested-callbacks
+                                        announce: true}).done(function(htmlsuccess) {
+                                        $(REGION.CONTENT_CONTROLS).prepend(htmlsuccess);
+                                    });
+                                } else {
+                                    Templates.render(TEMPLATES.ERROR, {message: langStrings[4],
+                                        closebutton: true,
+                                        // eslint-disable-next-line max-nested-callbacks
+                                        announce: true}).done(function(htmlerror) {
+                                        $(REGION.CONTENT_CONTROLS).prepend(htmlerror);
+                                    });
+                                }
+                                if (response.responseprintable === true) {
+                                    Templates.render(TEMPLATES.SUCCESS, {message: langStrings[5] + d.toTimeString().split(' ')[0],
+                                        closebutton: true,
+                                        // eslint-disable-next-line max-nested-callbacks
+                                        announce: true}).done(function(htmlsuccess) {
+                                        $(REGION.CONTENT_CONTROLS).prepend(htmlsuccess);
+                                    });
+                                } else {
+                                    Templates.render(TEMPLATES.ERROR, {message: langStrings[6],
+                                        closebutton: true,
+                                        // eslint-disable-next-line max-nested-callbacks
+                                        announce: true}).done(function(htmlerror) {
+                                        $(REGION.CONTENT_CONTROLS).prepend(htmlerror);
+                                    });
+                                }
+                                $(REGION.OVERLAY).remove();
+                            }).fail(Notification.exception);
+                        });
                     });
+                    modal.getRoot().on(ModalEvents.hidden, function() {
+                        modal.destroy();
+                    });
+                    return modal;
                 });
-                modal.getRoot().on(ModalEvents.hidden, function() {
-                    modal.destroy();
-                });
-                return modal;
-            });
-        }).done(function(modal) {
-            modal.show();
-        }).fail(Notification.exception);
+            }).done(function(modal) {
+                modal.show();
+            }).fail(Notification.exception);
+        }
     };
 
     EditResource.prototype.changeVersion = function() {
@@ -392,10 +451,12 @@ define([
         if (versionname === 'original') {
             $(ACTION.DELETEVERSION).prop('disabled', true);
             $(ACTION.LOADVERSION).prop('disabled', true);
+            $(ACTION.EDITTOC).prop('disabled', true);
             $(ACTION.PROCESSVERSIONLINKS).prop('disabled', true);
         } else {
             $(ACTION.DELETEVERSION).prop('disabled', false);
             $(ACTION.LOADVERSION).prop('disabled', false);
+            $(ACTION.EDITTOC).prop('disabled', false);
             $(ACTION.PROCESSVERSIONLINKS).prop('disabled', false);
         }
     };
@@ -403,87 +464,91 @@ define([
     EditResource.prototype.processVersionLinks = function(e) {
         e.preventDefault();
         e.stopPropagation();
-        let courseid = $(e.currentTarget).attr('data-courseid');
-        let resourceid = $(e.currentTarget).attr('data-resourceid');
-        let versionname = $(e.currentTarget).attr('data-versionname');
-        if (versionname === undefined) {
-            versionname = $('[data-region="select-version"]').val();
-        }
-        let stringkeys = [
-            {key: 'process_version_links', component: 'local_educaaragon'},
-            {key: 'process_version_links_desc', component: 'local_educaaragon'},
-            {key: 'confirm', component: 'local_educaaragon'},
-            {key: 'processed_resource_links', component: 'local_educaaragon'},
-            {key: 'not_processed_resource_links', component: 'local_educaaragon'},
-        ];
-        Str.get_strings(stringkeys).then(function(langStrings) {
-            let title = langStrings[0];
-            let confirmMessage = langStrings[1];
-            let buttonText = langStrings[2];
-            return ModalFactory.create({
-                title: title,
-                body: confirmMessage,
-                type: ModalFactory.types.SAVE_CANCEL
-            }).then(function(modal) {
-                modal.setSaveButtonText(buttonText);
-                modal.getRoot().on(ModalEvents.save, function() {
-                    let request = {
-                        methodname: SERVICES.PROCESSVERSIONLINKS,
-                        args: {
-                            courseid: courseid,
-                            resourceid: resourceid,
-                            versionname: versionname
-                        }
-                    };
-                    Templates.render(TEMPLATES.LOADING, {visible: true}).done(function(html) {
-                        let identifier = $(REGION.CONTENT_CONTROLS);
-                        identifier.append(html);
-                        Ajax.call([request])[0].done(function(response) {
-                            const d = new Date();
-                            if (response.response === true) {
-                                Templates.render(TEMPLATES.SUCCESS, {message: langStrings[3] + d.toTimeString().split(' ')[0],
-                                    closebutton: true,
-                                    // eslint-disable-next-line max-nested-callbacks
-                                    announce: true}).done(function(htmlsuccess) {
-                                    $(REGION.CONTENT_CONTROLS).prepend(htmlsuccess);
-                                    let resourceid = $(e.currentTarget).attr('data-resourceid');
-                                    if ($(ACTION.VIEWVERSIONLINKS).length > 0) {
-                                        let href = $(ACTION.VIEWVERSIONLINKS).attr('data-href');
-                                        let versionname = $('[data-region="select-version"]').val();
-                                        let url = href + '?resourceid=' + resourceid + '&version=' + versionname;
-                                        let n = window.open(url, '_blank');
-                                        if (n === null) {
-                                            window.location.href = url;
-                                        }
-                                    }
-                                    if ($(ACTION.VIEWVERSIONLINKSEDIT).length > 0) {
-                                        let url = $(ACTION.VIEWVERSIONLINKSEDIT).attr('href');
-                                        let n = window.open(url, '_blank');
-                                        if (n === null) {
-                                            window.location.href = url;
-                                        }
-                                    }
-                                });
-                            } else {
-                                Templates.render(TEMPLATES.ERROR, {message: langStrings[4],
-                                    closebutton: true,
-                                    // eslint-disable-next-line max-nested-callbacks
-                                    announce: true}).done(function(htmlerror) {
-                                    $(REGION.CONTENT_CONTROLS).prepend(htmlerror);
-                                });
+        if (hasChanges) {
+            EditResource.prototype.detectChanges(e);
+        } else {
+            let courseid = $(e.currentTarget).attr('data-courseid');
+            let resourceid = $(e.currentTarget).attr('data-resourceid');
+            let versionname = $(e.currentTarget).attr('data-versionname');
+            if (versionname === undefined) {
+                versionname = $('[data-region="select-version"]').val();
+            }
+            let stringkeys = [
+                {key: 'process_version_links', component: 'local_educaaragon'},
+                {key: 'process_version_links_desc', component: 'local_educaaragon'},
+                {key: 'confirm', component: 'local_educaaragon'},
+                {key: 'processed_resource_links', component: 'local_educaaragon'},
+                {key: 'not_processed_resource_links', component: 'local_educaaragon'},
+            ];
+            Str.get_strings(stringkeys).then(function(langStrings) {
+                let title = langStrings[0];
+                let confirmMessage = langStrings[1];
+                let buttonText = langStrings[2];
+                return ModalFactory.create({
+                    title: title,
+                    body: confirmMessage,
+                    type: ModalFactory.types.SAVE_CANCEL
+                }).then(function(modal) {
+                    modal.setSaveButtonText(buttonText);
+                    modal.getRoot().on(ModalEvents.save, function() {
+                        let request = {
+                            methodname: SERVICES.PROCESSVERSIONLINKS,
+                            args: {
+                                courseid: courseid,
+                                resourceid: resourceid,
+                                versionname: versionname
                             }
-                            $(REGION.OVERLAY).remove();
-                        }).fail(Notification.exception);
+                        };
+                        Templates.render(TEMPLATES.LOADING, {visible: true}).done(function(html) {
+                            let identifier = $('body');
+                            identifier.append(html);
+                            Ajax.call([request])[0].done(function(response) {
+                                const d = new Date();
+                                if (response.response === true) {
+                                    Templates.render(TEMPLATES.SUCCESS, {message: langStrings[3] + d.toTimeString().split(' ')[0],
+                                        closebutton: true,
+                                        // eslint-disable-next-line max-nested-callbacks
+                                        announce: true}).done(function(htmlsuccess) {
+                                        $(REGION.CONTENT_CONTROLS).prepend(htmlsuccess);
+                                        let resourceid = $(e.currentTarget).attr('data-resourceid');
+                                        if ($(ACTION.VIEWVERSIONLINKS).length > 0) {
+                                            let href = $(ACTION.VIEWVERSIONLINKS).attr('data-href');
+                                            let versionname = $('[data-region="select-version"]').val();
+                                            let url = href + '?resourceid=' + resourceid + '&version=' + versionname;
+                                            let n = window.open(url, '_blank');
+                                            if (n === null) {
+                                                window.location.href = url;
+                                            }
+                                        }
+                                        if ($(ACTION.VIEWVERSIONLINKSEDIT).length > 0) {
+                                            let url = $(ACTION.VIEWVERSIONLINKSEDIT).attr('href');
+                                            let n = window.open(url, '_blank');
+                                            if (n === null) {
+                                                window.location.href = url;
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    Templates.render(TEMPLATES.ERROR, {message: langStrings[4],
+                                        closebutton: true,
+                                        // eslint-disable-next-line max-nested-callbacks
+                                        announce: true}).done(function(htmlerror) {
+                                        $(REGION.CONTENT_CONTROLS).prepend(htmlerror);
+                                    });
+                                }
+                                $(REGION.OVERLAY).remove();
+                            }).fail(Notification.exception);
+                        });
                     });
+                    modal.getRoot().on(ModalEvents.hidden, function() {
+                        modal.destroy();
+                    });
+                    return modal;
                 });
-                modal.getRoot().on(ModalEvents.hidden, function() {
-                    modal.destroy();
-                });
-                return modal;
-            });
-        }).done(function(modal) {
-            modal.show();
-        }).fail(Notification.exception);
+            }).done(function(modal) {
+                modal.show();
+            }).fail(Notification.exception);
+        }
     };
 
     EditResource.prototype.viewVersionLinks = function(e) {
@@ -494,6 +559,34 @@ define([
         let versionname = $('[data-region="select-version"]').val();
         let url = href + '?resourceid=' + resourceid + '&version=' + versionname;
         window.open(url);
+    };
+
+    EditResource.prototype.detectChanges = function() {
+        if (hasChanges) {
+            modalChanges.show();
+        }
+    };
+
+    EditResource.prototype.createModalChanges = function() {
+        Str.get_strings(hasChangesStringsKeys).then(function(langStrings) {
+            hasChangesStrings = langStrings;
+            let title = hasChangesStrings[0];
+            let confirmMessage = hasChangesStrings[1];
+            let buttonText = hasChangesStrings[2];
+            ModalFactory.create({
+                title: title,
+                body: confirmMessage,
+                type: ModalFactory.types.SAVE_CANCEL
+            }).then(function(modal) {
+                modal.setSaveButtonText(buttonText);
+                modal.getRoot().on(ModalEvents.save, function() {
+                    $(ACTION.SAVECHANGES).click();
+                    modal.hide();
+                });
+                modalChanges = modal;
+            });
+            return true;
+        });
     };
 
     return {

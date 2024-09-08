@@ -37,8 +37,6 @@ require_capability('local/educaaragon:editresources', $context);
 
 $PAGE->set_url('/local/educaaragon/editresource.php');
 $PAGE->set_pagelayout('frontpage');
-$PAGE->navbar->add('Curso', 'https://www.adistanciafparagon.es/course/view.php?id=' . $resource->course);
-$PAGE->navbar->add('Recursos editables', 'https://www.adistanciafparagon.es/local/educaaragon/editables.php?courseid=' . $resource->course);
 $contextsystem = context_system::instance();
 $PAGE->set_context($contextsystem);
 

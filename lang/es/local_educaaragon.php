@@ -89,15 +89,16 @@ $string['relatedcmid'] = 'Recurso relacionado';
 $string['revieweditableresource'] = 'Ver recurso';
 $string['editresource'] = 'Editar recurso';
 $string['viewprintresource'] = 'Ver versión para impresión';
+$string['vieweditcontent'] = 'Editar contenidos';
 
 // Edit resource
 $string['editingresource'] = 'Editando recurso';
 $string['resourcenoteditable'] = 'Este recurso no es editable';
-$string['versionnoteditable'] = 'Esta versión no se puede editar. Seleccione una versión diferente.';
+$string['versionnoteditable'] = 'Esta versión no se puede editar. Seleccione una versión diferente en <a href="{$a}">{$a}</a>';
 $string['selectversion'] = 'Seleccione la versión';
 $string['selectsection'] = 'Seleccione el apartado para editar';
 $string['createnewversion'] = 'Crear una nueva versión';
-$string['createnewversion_desc'] = '¿Seguro que quiere crear una nueva versión para editar?<br>El nombre que ha puesto a la versión será modificado para quitar carácteres especiales y sustituir espacios por -. Si lo ha dejado vacío, se pondrá la fecha en formato Unix como nombre de la versión';
+$string['createnewversion_desc'] = '¿Seguro que quiere crear una nueva versión para editar?<br>El nombre que ha puesto a la versión será modificado para quitar carácteres especiales y sustituir espacios por _. Si lo ha dejado vacío, se pondrá la fecha en formato Unix como nombre de la versión';
 $string['confirm'] = 'Confirmar';
 $string['versionname'] = 'Nombre';
 $string['loadversion'] = 'Editar version';
@@ -174,6 +175,15 @@ $string['numprocessedcorrectly'] = 'Correctos: ';
 $string['numprocessederror'] = 'Errores: ';
 $string['numprocessedwarning'] = 'Sin carpeta: ';
 $string['nofolder'] = 'Sin carpeta';
-
-// Navigation Links
-$string['nav_adm_cursos'] = 'Administración del sitio (cursos)';
+$string['changesnotsaved'] = 'Guardar antes de salir';
+$string['changesnotsaved_desc'] = 'Se han detectado cambios y es necesario guardar antes de salir.<br>Si no desea guardar, cierre o recargue esta pestaña del navegador.';
+$string['savechanges'] = 'Guardar cambios';
+$string['haschanges'] = '* Se han realizado cambios';
+$string['edittoc'] = 'Edición de TOC';
+$string['edittoctitle'] = 'Edición de tabla de contenidos';
+$string['toc_list'] = 'Tabla de Contenidos';
+$string['toc_list_info'] = 'En este panel puede modificar los títulos y el orden de la tabla de contenidos arrastrando y soltando los títulos para ordenarlos cómo desee, pero tenga en cuenta que la numeración se ha de añadir manualmente, ya que no se ordenará automáticamente (también puede optar por eliminar la numeración, según requiera el contenido).<br><b style="color: red">Asegúrese de que nadie esté editando el mismo recurso al mismo tiempo, ya sea el propio contenido o la tabla de contenidos, ya que se puede llegar a corromper la versión y perder todo el trabajo realizado sobre ésta.</b><br><b style="color: red">El elemento marcado con letra de color rojo corresponde al archivo index.html, por lo que siempre debe ser el primer elemento de la lista, ya que es el que se carga al entrar en el recurso.</b><br><b style="color: red">Los títulos que edite en este panel no serán aplicados al contenido correspondiente, por lo que también se tendrán que modificar en la propia edición de contenidos (en el caso de que tenga título).</b></br><b>Cuando termine, guarde los cambios y aplique la versión en el panel de edición de contenidos para que los estudiantes puedan visualizar los cambios.</b>';
+$string['delete_node'] = 'Eliminar nodo';
+$string['delete_node_desc'] = 'Se eliminará el nodo seleccionado, y todos sus nodos anidados. ¿Estás seguro de eliminarlo?';
+$string['addnewnode'] = 'Añadir nuevo elemento';
+$string['more_info'] = 'Más información sobre la interfaz';

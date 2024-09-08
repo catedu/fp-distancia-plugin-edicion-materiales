@@ -43,8 +43,6 @@ if ($resourceid !== 0) {
 }
 
 $PAGE->set_url('/local/educaaragon/registereditions.php');
-
-$PAGE->navbar->add('Administración del sitio (cursos)', 'https://www.adistanciafparagon.es/admin/search.php#linkcourses');
 $PAGE->set_pagelayout('frontpage');
 $contextsystem = context_system::instance();
 $PAGE->set_context($contextsystem);
