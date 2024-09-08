@@ -1,0 +1,187 @@
+<style>
+    .toc-list-content {
+        transition: all .5s ease !important;
+    }
+    .toc-list-content ul {
+        list-style: none;
+        padding-left: 15px;
+    }
+    .toc-list-content ul:first-child {
+        padding-left: 0;
+    }
+    .toc-list-content ul li a {
+        pointer-events: none;
+    }
+    .toc-list-content ul li {
+        cursor: move;
+        border: 1px dotted transparent;
+        padding: 5px 15px;
+        margin: 10px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        font-size: 15px;
+        transition: all .5s ease !important;
+        position: relative;
+    }
+    .toc-list-content ul li:hover {
+        transition: all .5s ease !important;
+    }
+    .unselectable {
+        -moz-user-select: -moz-none,
+        -moz-user-select: none,
+        -o-user-select: none,
+        -khtml-user-select: none,
+        -webkit-user-select: none,
+        -ms-user-select: none,
+        user-select: none
+    }
+    .dragaware {
+        cursor: pointer;
+    }
+    .draggable_clone {
+        position: absolute;
+        z-index: 100001;
+        pointer-events: none;
+    }
+    .draggable.dragging, .draggable .dragging {
+        opacity: 0.5;
+    }
+    .dragging {
+        background-color: #cce5ff;
+        border: 1px dashed #007bff;
+    }
+    .sortable .sortable_clone {
+        position: absolute;
+        z-index: 100001;
+        list-style-type: none;
+        opacity: 0.5;
+        background-color: #cce5ff;
+        border: 1px dashed #007bff;
+    }
+    .sortable .sortable_placeholder {
+        box-sizing: border-box;
+        list-style-type: none;
+        background: #e2f7e1;
+        border: 1px dashed #28a745;
+    }
+    .sortable .sortable_clone .edit-title,
+    .sortable .sortable_clone .delete-node {
+        display: none;
+    }
+    .edit-title,
+    .delete-node {
+        cursor: pointer;
+        pointer-events: auto;
+        position: absolute;
+        right: 0;
+    }
+    .delete-node {
+        right: 25px;
+    }
+    a[contenteditable='true'] {
+        caret-color: red;
+        outline: 0 solid transparent;
+    }
+    a[contenteditable='true']:active,
+    a[contenteditable='true']:focus {
+        outline: none;
+        transition: background-color 0.3s ease;
+        border-radius: 5px;
+        padding: 5px;
+        background: #e2f7e1;
+        border: 1px dashed #28a745;
+    }
+    a[contenteditable='true']:focus {
+        font-weight: normal !important;
+    }
+    a[contenteditable='true']:active {
+        font-weight: normal !important;
+    }
+    a[placeholder]:empty:before {
+        content: attr(placeholder);
+        color: red;
+    }
+    a[placeholder]:empty:focus:before {
+        content: "";
+    }
+    .content-title {
+    }
+    .content-title:hover {
+        font-weight: bold;
+    }
+    li.index-element {
+        list-style: none;
+        cursor: default;
+        border: 1px dotted transparent;
+        padding: 5px 15px;
+        margin: 10px 10px 10px 25px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        font-size: 15px;
+        transition: all .5s ease !important;
+        position: relative;
+    }
+    li.index-element a:hover {
+        text-decoration: none;
+    }
+</style>
+<div class="local_educaaragon_editresource" data-region="educaaragon-editresourcetoc">
+    {{#error}}
+        <div class="alert alert-danger">
+            <strong>{{{.}}}</strong>
+        </div>
+    {{/error}}
+    {{^error}}
+        <h4>{{#str}}editingresource, local_educaaragon{{/str}}: {{ resourcename }}</h4>
+        <h5>{{#str}}course{{/str}}: {{coursename}}</h5>
+        <hr>
+        <a class="float-right" href="{{ backversions }}" data-action="backversions" >{{#str}}backversions, local_educaaragon{{/str}}</a>
+        <h5>{{#str}}version{{/str}}: {{ versionname }}</h5>
+        <hr>
+        <button class="btn btn-link" style="padding: 0" type="button" data-toggle="collapse" data-target="#collapsemore_info" aria-expanded="false" aria-controls="collapsemore_info">
+            <b>{{#str}}more_info, local_educaaragon{{/str}}</b>
+        </button>
+        <div class="collapse" id="collapsemore_info" style="box-shadow: none">
+            <!--<h6 class="titlecontainer">
+                {{#str}}toc_list, local_educaaragon{{/str}}
+            </h6>-->
+            <small>{{#str}}toc_list_info, local_educaaragon{{/str}}</small>
+        </div>
+        <hr>
+        <div class="row toc-content">
+            <div class="col-12 container">
+                <div class="toc-list">
+                    <div class="content-controls">
+                        <button class="btn btn-primary mx-sm-3 mb-2" data-action="save-changes" data-courseid="{{ courseid }}" data-resourceid="{{ resourceid }}" data-versionname="{{ versionname }}" data-filename="{{ filename }}">
+                            {{#str}}save_changes, local_educaaragon{{/str}}
+                        </button>
+                        <a class="btn btn-warning mx-sm-3 mb-2" href="{{ vieweditcontent }}" target="_blank" data-action="viewversionlinks_link">{{#str}}vieweditcontent, local_educaaragon{{/str}}</a>
+                        <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewesource }}" target="_blank" data-action="viewesource" >{{#str}}revieweditableresource, local_educaaragon{{/str}}</a>
+                        <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewprintresource }}" target="_blank" data-action="viewprintresource" >{{#str}}viewprintresource, local_educaaragon{{/str}}</a>
+                        <a class="btn btn-info mx-sm-3 mb-2" href="{{ viewcourse }}" target="_blank" data-action="viewcourse" >{{#str}}viewcourse, local_educaaragon{{/str}}</a>
+                    </div>
+                    <div class="newnode w-100 text-right d-block btn btn-link forprev" data-action="add-new-node">{{#str}}addnewnode, local_educaaragon{{/str}}</div>
+                    <small class="haschanges" style="display: none; color: red; text-align: right">{{#str}}haschanges, local_educaaragon{{/str}}</small>
+                    <div class="toc-list-content" data-region="toc-list-content">
+                        {{{tochtml}}}
+                    </div>
+                    <small class="haschanges" style="display: none; color: red; text-align: right">{{#str}}haschanges, local_educaaragon{{/str}}</small>
+                    <div class="newnode w-100 text-right d-block btn btn-link forend" data-action="add-new-node">{{#str}}addnewnode, local_educaaragon{{/str}}</div>
+                </div>
+            </div>
+        </div>
+    {{/error}}
+</div>
+{{#js}}
+    require(['local_educaaragon/edittoc', 'jquery'], function(EditToc, $) {
+        $(function() {
+            $('.toc-list-content ul:first-child').sortable({
+                autocreate: true,
+                update: function(evt) {
+                    hasChanges = true;
+                    $('.haschanges').css('display', 'block');
+                }
+            });
+        });
+    });
+{{/js}}
