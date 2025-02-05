@@ -541,16 +541,18 @@ class manage_editable_resource {
             if ($fs->file_exists($context, 'mod_resource', 'content', 0, '/', $file['title'])) {
                 $fs->delete_area_files($context, 'mod_resource', 'content', 0);
             }
-            $fileinfo = [
-                'component' => 'mod_resource',
-                'filearea' => 'content',
-                'contextid' => $context,
-                'itemid' => 0,
-                'filename' => $file['title'],
-                'filepath' => '/',
-            ];
-            $filepath = $this->repository->get_file($file['path'])['path'];
-            $fs->create_file_from_pathname($fileinfo, $filepath);
+            if (isset($file['source'])) {
+                $fileinfo = [
+                    'component' => 'mod_resource',
+                    'filearea' => 'content',
+                    'contextid' => $context,
+                    'itemid' => 0,
+                    'filename' => $file['title'],
+                    'filepath' => '/',
+                ];
+                $filepath = $this->repository->get_file($file['source'])['path'];
+                $fs->create_file_from_pathname($fileinfo, $filepath);
+            }
         }
         $indexhtml = $fs->get_file($context, 'mod_resource', 'content', 0, '/', 'index.html');
         $filepath = file_correct_filepath('/');
@@ -1117,6 +1119,8 @@ class manage_editable_resource {
      * @param string $newlist
      * @param string $version
      * @return string
+     * @throws DOMException
+     * @throws coding_exception
      * @throws repository_exception
      */
     private function processNewNodes(string $newlist, string $version): string {
@@ -1128,7 +1132,9 @@ class manage_editable_resource {
         foreach ($newNodes as $childNode) {
             $anchorNode = $childNode->getElementsByTagName('a')->item(0);
             if ($anchorNode) {
-                $nodeValue = mb_strtolower(trim($anchorNode->nodeValue), 'UTF-8');
+                $nodeValue = trim($anchorNode->nodeValue);
+                $encoding = mb_detect_encoding($nodeValue, mb_list_encodings(), true);
+                $nodeValue = mb_convert_encoding($nodeValue, 'UTF-8', $encoding);
                 $baseFilename = $folder . '/' . clean_string(mb_convert_encoding($nodeValue, 'UTF-8')) . '.html';
                 $filename = $baseFilename;
                 $counter = 1;
@@ -1157,6 +1163,8 @@ class manage_editable_resource {
                             $mainSection->removeChild($child);
                         }
                     }
+                    $newParagraph = $newHtml->createElement('p', get_string('content_here', 'local_educaaragon'));
+                    $mainSection->appendChild($newParagraph);
                     $mainSection->normalize();
                     $newHtml->saveHTMLFile($newFilePath);
                 }
